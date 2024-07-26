@@ -17,12 +17,11 @@ export const environment = {
     //MARKETPLACE | BTB | STANDARD
     mode: 'STANDARD',
     //API URL
-    //apiUrl: "http://localhost:8080/api/api",
     apiUrl: "http://localhost:8080/api",
     shippingApi: 'http://localhost:9090/shipping/api/v1',
     client: {
         language: {
-            default: 'en',
+            default: 'fr',
             array: [
                 'fr',
                 'en'

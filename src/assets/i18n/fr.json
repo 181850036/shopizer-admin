@@ -1,7 +1,6 @@
 {
     "canadapost": "Canada Post",
     "ups": "UPS",
-    "shiprocket": "ShipRocket",
     "weightBased": "Prix d'expédition basé sur le poids",
     "customQuotesRules": "Méthode d'expédition personnalisée",
     "priceByDistance": "Prix de livraison par distance",
@@ -10,7 +9,6 @@
     "paypal-express-checkout": "PayPal Express Checkout",
     "beanstream": "Beanstream",
     "stripe": "Stripe",
-  	"paytm": "Paytm",
     "braintree": "Braintree",
     "COMPONENTS": {
         "LOGIN": "Connexion",
@@ -246,8 +244,7 @@
         "CATEGORY_NAME": "Nom de la catégorie",
         "PARENT": "Parent",
         "HIERARCHY_UPDATED": "Hiérarchie mise à jour avec succès",
-        "CATEGORY_VISIBILITY": "Mise à jour de la visibilité",
-        "SELECT_CATEGORY": "Choisir une catégorie"
+        "CATEGORY_VISIBILITY": "Mise à jour de la visibilité"
     },
     "CATEGORY_FORM": {
         "ROOT_CATEGORY": "Catégorie Racine",
@@ -349,8 +346,7 @@
         "OPTION_VALUE_NAME": "Nom de la valeur d'option",
         "OPTION_VALUE_UPDATED": "Valeur de l'option mise à jour.",
         "OPTION_VALUE_CREATED": "Valeur d'option créée.",
-        "OPTION_VALUE_REMOVED": "Valeur de l'option supprimée.",
-        "SELECT_OPTION_VALUE": "Choisir une valeur d'option"
+        "OPTION_VALUE_REMOVED": "Valeur de l'option supprimée."
     },
     "OPTION_SET": {
         "SELECT_OPTION_NAME": "Sélectionnez le nom de l'option",
@@ -564,7 +560,6 @@
         "FILE_MAX_COUNT": "Vous pouvez télécharger un maximum de 10 images",
         "NO_ITEMS": "Aucun article à afficher",
         "VALUE_REQUIRED": "La valeur est requise",
-        "INVALID_VALUE": "La valeur n'est vas valid",
         "ACTIONS": "Actions",
         "READ_ONLY": "Lecture seule",
         "radio": "Radio",

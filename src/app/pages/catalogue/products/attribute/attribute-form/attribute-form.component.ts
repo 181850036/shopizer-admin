@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { OptionService } from '../../../options/services/option.service';
 import { OptionValuesService } from '../../../options/services/option-values.service';
 import { ProductAttributesService } from '../../services/product-attributes.service';
-import { ErrorService } from '../../../../shared/services/error.service';
 import { validators } from '../../../../shared/validation/validators';
 import { forkJoin } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { StorageService } from '../../../../shared/services/storage.service';
 import { ToastrService } from 'ngx-toastr';
 import { formatMoney } from '../../../../shared/validation/price-validation';
 import { NbDialogRef } from '@nebular/theme';
@@ -23,29 +22,25 @@ export class AttributeFormComponent implements OnInit {
   attribute: any = {};
 
   form: FormGroup;
-  loading = false;
+  loader = false;
 
   options = [];
   optionValues = [];
 
   currency = '';
 
-  perPage = 50;
-
   constructor(
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder,
     private optionService: OptionService,
-    private storageService: StorageService,
     private optionValuesService: OptionValuesService,
     private productAttributesService: ProductAttributesService,
     private toastr: ToastrService,
     private translate: TranslateService,
-    private errorService: ErrorService,
     protected ref: NbDialogRef<AttributeFormComponent>
   ) {
-    forkJoin([
-      this.optionService.getListOfOptions({}), 
-      this.optionValuesService.getListOfOptionValues({})])
+    forkJoin(this.optionService.getListOfOptions({}), this.optionValuesService.getListOfOptionValues({}))
       .subscribe(([optionRes, optionValueRes]) => {
         optionRes.options.forEach((option) => {
           this.options.push({ value: option.code, label: option.code });
@@ -56,47 +51,33 @@ export class AttributeFormComponent implements OnInit {
         this.options.push({ value: '', label: 'Please select options' });
         this.optionValues.push({ value: '', label: 'Please select option values' });
       });
-  };
-
-  
-  params =  {
-      store: this.storageService.getMerchant(),
-      lang: "_all",
-      name: null,
-      count: this.perPage,
-      page: 0,
   }
-
-
 
   ngOnInit() {
 
     this.createForm();
     if (this.attributeId) {
-      this.loading = true;
+      this.loader = true;
       this.productAttributesService.getAttributesById(this.productId, this.attributeId, {}).subscribe(res => {
         this.attribute = res;
         this.fillForm();
-        this.loading = false;
+        this.loader = false;
       }, error => {
-        this.loading = false;
+        this.loader = false;
       });
     }
   }
-
-
 
   private createForm() {
     this.form = this.fb.group({
       option: ['', [Validators.required]],
       attributeDisplayOnly: [false],
       optionValue: ['', [Validators.required]],
-      //optionValue: [''],
-      productAttributeUnformattedPrice: [0, [Validators.required]],
-      sortOrder: [0, [Validators.pattern(validators.number)]],
+      productAttributeUnformattedPrice: ['', [Validators.required]],
+      sortOrder: ['', [Validators.pattern(validators.number)]],
       attributeDefault: [false],
       requiredOption: [false],
-      productAttributeWeight: [0, [Validators.required]]
+      productAttributeWeight: ['', [Validators.required]]
     });
   }
 
@@ -112,16 +93,12 @@ export class AttributeFormComponent implements OnInit {
 
   fillForm() {
     let index = this.optionValues.findIndex((a) => a.value === this.attribute.optionValue.code);
-    let value = null;
-    if(this.attribute.optionValue != null) {
-      value = this.attribute.optionValue.code;
-    }
+    // console.log(index)
 
     this.form.patchValue({
-      
       option: this.attribute.option.code,
       attributeDisplayOnly: this.attribute.attributeDisplayOnly,
-      optionValue: this.attribute.optionValue.code,
+      optionValue: index === -1 ? '' : this.attribute.optionValue.code,
       productAttributeUnformattedPrice: this.attribute.productAttributeUnformattedPrice,
       sortOrder: this.attribute.sortOrder,
       attributeDefault: this.attribute.attributeDefault,
@@ -142,58 +119,8 @@ export class AttributeFormComponent implements OnInit {
     return this.form.get('productAttributeUnformattedPrice');
   }
 
-  onSelectOptionValue(event) {
-    this.loading = true;
-    //console.log('----------Found value ' + event.query);
-    this.optionValues.push({ value: 'ABCD', label: 'ABCD' });
-    this.loading = true;
-    this.params.name = event.query;
-    this.optionValuesService.getListOfOptionValues(this.params)
-    .subscribe(res => {
-      if(res.recordsTotal === 0 ) {
-        //invalid selection
-        //this.form.controls['optionValue'].setErrors({'invalid': true});
-        //this.form.controls['optionValue'].markAsTouched();
-        this.loading = false;
-      } else {
-        //this.optionValues = new Array();
-        res.optionValues.forEach((optionValue) => {
-          this.optionValues.push({ value: optionValue.code, label: optionValue.code });
-        });
-        this.loading = false;
-      }
-     
-    });
-  }
-
-  searchOptionValue(event) {
-    //this.loading = true;
-    this.params.name = event.query;
-    this.optionValuesService.getListOfOptionValues(this.params)
-    .subscribe(res => {
-      if(res.recordsTotal === 0 ) {
-        //invalid selection, empty list
-        //this.optionValues = new Array();
-        this.form.controls['optionValue'].markAsTouched();
-        this.form.controls['optionValue'].setErrors({'invalid': true});
-        //this.loading = false;
-        //this.optionValues.push({ value: '', label: '' });
-        
-      } else {
-        //this.optionValues = new Array();
-        //this.loading = false;
-        res.optionValues.forEach((optionValue) => {
-          this.optionValues.push({ value: optionValue.code, label: optionValue.code });
-        });
-        
-      }
-      
-    });
-
-  }
-
   save() {
-    this.loading = true;
+    this.loader = true;
     const optionObj = this.form.value;
     optionObj.option = { code: optionObj.option };
     optionObj.optionValue = { code: optionObj.optionValue };
@@ -202,29 +129,27 @@ export class AttributeFormComponent implements OnInit {
     if (this.attribute.id) {
       this.productAttributesService.updateAttribute(this.productId, this.attributeId, this.form.value)
         .subscribe(res => {
-          this.loading = false;
+          this.loader = false;
           // this.attribute = res;
-          this.errorService.success("PRODUCT_ATTRIBUTES.PRODUCT_ATTRIBUTES_UPDATED");
           this.goToback();
+          this.toastr.success(this.translate.instant('PRODUCT_ATTRIBUTES.PRODUCT_ATTRIBUTES_UPDATED'));
         }, error => {
-          this.loading = false;
-          this.errorService.error("ERROR.SYSTEM_ERROR_TEXT", 500);
+          this.loader = false;
         });;
     } else {
       this.productAttributesService.createAttribute(this.productId, this.form.value).subscribe(res => {
-        this.loading = false;
+        this.loader = false;
         // this.attribute = res;
-        
-        this.toastr.success(this.translate.instant('PRODUCT_ATTRIBUTES.PRODUCT_ATTRIBUTES_UPDATED'));
         this.goToback();
+        this.toastr.success(this.translate.instant('PRODUCT_ATTRIBUTES.PRODUCT_ATTRIBUTES_UPDATED'));
       }, error => {
-        this.loading = false;
-        this.errorService.error("ERROR.SYSTEM_ERROR_TEXT", 500);
+        this.loader = false;
       });
     }
   }
   goToback() {
     this.ref.close();
+    // this.router.navigate(['pages/catalogue/products/' + this.productId + '/product-attributes']);
   }
 
 }

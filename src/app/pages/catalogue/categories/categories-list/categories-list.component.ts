@@ -27,7 +27,7 @@ export class CategoriesListComponent implements OnInit {
   settings = {};
 
   // paginator
-  perPage = 25;
+  perPage = 30;
   currentPage = 1; //start base
   totalCount;
   roles;
@@ -108,14 +108,13 @@ export class CategoriesListComponent implements OnInit {
   //specific to category
   getList() {
     this.categories = [];
+    this.params.page = this.currentPage -1;
     this.fetchTableData()  
     this.setSettings();
   }
 
   fetchTableData(){
     this.loadingList = true;
-    var page = this.currentPage -1;
-    this.params.page = page;
     this.categoryService.getListOfCategories(this.params)
       .subscribe(categories => {
         categories.categories.forEach((el) => {

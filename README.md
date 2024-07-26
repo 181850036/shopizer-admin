@@ -2,7 +2,7 @@
 
 ## Tested with node v12.22.7
 
-Requires Angular cli installed (npm install -g @angular/cli@13.3.x)
+Requires Angular cli installed (npm install -g @angular/cli@latest)
 
 # Set backend api
 
@@ -10,7 +10,7 @@ Requires Angular cli installed (npm install -g @angular/cli@13.3.x)
 
 ## Run locally
 
-npm install --legacy-peer-deps
+npm i --yes
 
 ng serve -o
 
@@ -21,7 +21,7 @@ ng build
 
 ## Run docker images
 
-Assumes your backend runs on http://localhost:8080/api
+Assumes your backend runs on http://localhost:8080
 
 ```
 docker run \

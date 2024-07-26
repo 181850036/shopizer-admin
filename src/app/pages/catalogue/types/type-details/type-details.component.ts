@@ -7,7 +7,6 @@ import { TypesService } from '../services/types.service';
 import { StorageService } from '../../../shared/services/storage.service';
 import { NbDialogService } from '@nebular/theme';
 import { ShowcaseDialogComponent } from '../../../shared/components/showcase-dialog/showcase-dialog.component';
-import { forkJoin } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ConfigService } from '../../../shared/services/config.service';
@@ -20,11 +19,9 @@ export class TypeDetailsComponent implements OnInit {
 
   form: FormGroup;
   loading: boolean = false;
-  loaded: boolean = false;
   isReadonlyCode = false;
   isCodeExist = false;
   isValidCode = true;
-  defaultLanguage = localStorage.getItem('lang');
   languages = [];
   type = {
     id: '',
@@ -46,55 +43,42 @@ export class TypeDetailsComponent implements OnInit {
     private typesService: TypesService,
     private activatedRoute: ActivatedRoute,
     private configService: ConfigService
-  ) { }
+  ) {
 
-  ngOnInit(): void {
-
-    this.loading = true;
-    
-    let param = {
-      //lang: this.storageService.getLanguage(),
-      lang: "_all",
-      store: this.storageService.getMerchant()
-    }
-    const typeId = this.activatedRoute.snapshot.paramMap.get('id');
-    if (typeId) {
-    const types$ = this.typesService.getType(typeId, param)
-    const config$ = this.configService.getListOfSupportedLanguages(localStorage.getItem('merchant'));
-    forkJoin([types$, config$])
-      .subscribe(([productType, languages]) => {
-
-        this.type.id = productType.id;
-        this.type.code = productType.code;
-        this.type.allowAddToCart = productType.allowAddToCart;
-        this.type.visible = productType.visible;
-        this.type.description = productType.description;
-        this.type.descriptions = productType.descriptions;
-
-        this.isReadonlyCode = true;
-        this.languages = [...languages];
-        this.createForm();
-        this.addFormArray();
-        if(this.type) {
-          this.fillForm();
-        }
-
-        this.loading = false;
-        this.loaded = true;
-
-      
-    });
-  } else {
-    const config$ = this.configService.getListOfSupportedLanguages(localStorage.getItem('merchant'))
-      .subscribe((languages) => {
-        this.languages = [...languages];
-        this.createForm();
-        this.addFormArray();
-        this.loading = false;
-        this.loaded = true;
-    });
+    this.languages = [...this.configService.languages];
   }
 
+  ngOnInit(): void {
+    const typeId = this.activatedRoute.snapshot.paramMap.get('id');
+    this.createForm();
+    if (typeId) {
+      this.loading = true;
+      let param = {
+        //lang: this.storageService.getLanguage(),
+        lang: "_all",
+        store: this.storageService.getMerchant()
+      }
+      this.typesService.getType(typeId, param)
+        .subscribe((res) => {
+
+          //console.log(JSON.stringify(res));
+
+          this.type.id = res.id;
+          this.type.code = res.code;
+          this.type.allowAddToCart = res.allowAddToCart;
+          this.type.visible = res.visible;
+          this.type.description = res.description;
+          this.type.descriptions = res.descriptions;
+
+          this.isReadonlyCode = true;
+
+          this.adjustForm();
+          this.loading = false;
+
+        }, error => {
+          this.loading = false;
+        });
+    }
 
   }
 
@@ -103,9 +87,11 @@ export class TypeDetailsComponent implements OnInit {
       allowAddToCart: [true],
       visible: [false],
       code: [{ value: '', disabled: false }, [Validators.required, Validators.pattern(validators.alphanumeric)]],
-      selectedLanguage: this.defaultLanguage,
+      selectedLanguage: ['en'],
       descriptions: this.fb.array([]),
+      // name: ['', [Validators.required]]
     });
+    this.addFormArray();
   }
 
   addFormArray() {
@@ -113,20 +99,21 @@ export class TypeDetailsComponent implements OnInit {
     this.languages.forEach(lang => {
       control.push(
         this.fb.group({
-          language: [lang.code, [Validators.required]],
-          name: ['', [Validators.required]],
+          language: [lang.code, []],
+          name: ['', []]
         })
       );
     });
   }
 
-  private fillForm() {
+  private adjustForm() {
     this.form.patchValue({
       allowAddToCart: this.type.allowAddToCart,
       visible: this.type.visible,
       code: this.type.code,
-      selectedLanguage: this.defaultLanguage
+      selectedLanguage: 'en',
     });
+
     if (this.type.id) {
       this.form.controls['code'].disable();
     }
@@ -199,12 +186,11 @@ export class TypeDetailsComponent implements OnInit {
     return this.form.get('selectedLanguage');
   }
 
-
-
   selectLanguage(lang) {
     this.form.patchValue({
       selectedLanguage: lang,
     });
+    //this.fillFormArray();
   }
 
   get descriptions(): FormArray {

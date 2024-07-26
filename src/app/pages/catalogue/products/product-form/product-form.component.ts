@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -17,15 +17,8 @@ import { TypesService } from '../../types/services/types.service';
 import { StorageService } from '../../../shared/services/storage.service';
 import { Image } from '../../../shared/models/image';
 import { ImageBrowserComponent } from '../../../../@theme/components/image-browser/image-browser.component';
-//import { threadId } from 'worker_threads';
 declare var jquery: any;
 declare var $: any;
-
-export interface TabItem {
-  label: string;
-  icon: string;
-  route: string;
-}
 
 @Component({
   selector: 'ngx-product-form',
@@ -48,39 +41,9 @@ export class ProductFormComponent implements OnInit {
   defaultLanguage = localStorage.getItem('lang');
   //changed from seo section
   currentLanguage = localStorage.getItem('lang');
+  // tabs: any[];
   images: Image[] = [];
-
-
-  tabs = [
-    {
-      title: this.translate.instant('COMPONENTS.PRODUCTS_IMAGES'),
-      route: 'images',
-      icon: 'home',
-      fragment: 'tabs',
-      responsive: true, // hide title before `$tabset-tab-text-hide-breakpoint` value
-    },
-    {
-      title: this.translate.instant('COMPONENTS.PRODUCT_TO_CATEGORY'),
-      route: 'category',
-      fragment: 'tabs',
-  
-    },
-    {
-      title: this.translate.instant('COMPONENTS.OPTIONS_CONFIG'),
-      route: 'options',
-      fragment: 'tab1',
-    },
-    {
-      title: this.translate.instant('COMPONENTS.PRODUCTS_PROPERTIES'),
-      route: 'properties',
-      fragment: 'tab1',
-    },
-    {
-      title: this.translate.instant('COMPONENTS.PRODUCTS_DISCOUNT'),
-      route: 'discount',
-      fragment: 'tab1',
-    }
-   ];
+  // addImageUrlComponent = '';//add image url to be used by uploader
 
 
   //summernote
@@ -122,9 +85,8 @@ export class ProductFormComponent implements OnInit {
   }
 
   ngOnInit() {
-
     this.loadEvent();
-
+    //console.log('Parent ' + this.product.id);
     const manufacture$ = this.manufactureService.getManufacturers();
     const types$ = this.productService.getProductTypes();
     const config$ = this.configService.getListOfSupportedLanguages(localStorage.getItem('merchant'));
@@ -171,7 +133,7 @@ export class ProductFormComponent implements OnInit {
 
   private createForm() {
     this.form = this.fb.group({
-      sku: ['', [Validators.required, Validators.pattern(validators.alphanumeric)]],
+      identifier: ['', [Validators.required, Validators.pattern(validators.alphanumeric)]],
       visible: [false],
       dateAvailable: [new Date()],
       manufacturer: ['', [Validators.required]],
@@ -221,8 +183,10 @@ export class ProductFormComponent implements OnInit {
 
 
   fillForm() {
+    //this.addImageUrlComponent = this.productImageService.addImageUrl(this.product.id);
+    //this.refreshChilds();
     this.form.patchValue({
-      sku: this.product.sku,
+      identifier: this.product.identifier,
       visible: this.product.visible,
       canBePurchased: this.product.canBePurchased,
       dateAvailable: new Date(this.product.dateAvailable),
@@ -277,8 +241,8 @@ export class ProductFormComponent implements OnInit {
     });
   }
 
-  get sku() {
-    return this.form.get('sku');
+  get identifier() {
+    return this.form.get('identifier');
   }
 
   get manufacturer() {
@@ -317,6 +281,7 @@ export class ProductFormComponent implements OnInit {
       selectedLanguage: lang,
     });
     this.currentLanguage = lang;
+    //this.fillFormArray();
   }
 
   changeName(event, index) {
@@ -326,9 +291,9 @@ export class ProductFormComponent implements OnInit {
   }
 
   refreshProduct() {
-    //v1 product details
-    this.productService.getProductById(this.product.id)
+    this.productService.getProductDefinitionById(this.product.id)
       .subscribe(res => {
+        // console.log(res);
         this.images = res.images;
       }, error => {
         this.toastr.error(error.error.message);
@@ -340,7 +305,7 @@ export class ProductFormComponent implements OnInit {
     this.loading = true;
     this.productService.checkProductSku(event.target.value)
       .subscribe(res => {
-        this.isCodeUnique = !(res.exists && (this.product.sku !== event.target.value));
+        this.isCodeUnique = !(res.exists && (this.product.identifier !== event.target.value));
         this.loading = false;
       });
   }
@@ -377,7 +342,7 @@ export class ProductFormComponent implements OnInit {
   checkSku(event) {
     this.productService.checkProductSku(event.target.value)
       .subscribe(res => {
-        this.isCodeUnique = !(res.exists && (this.product.sku !== event.target.value));
+        this.isCodeUnique = !(res.exists && (this.product.identifier !== event.target.value));
       });
   }
   **/
@@ -436,7 +401,7 @@ export class ProductFormComponent implements OnInit {
     }
     // check required fields
     //object validations on the form
-    if (tmpObj.name === '' || tmpObj.friendlyUrl === '' || productObject.sku === '' || productObject.manufacturer === '') {
+    if (tmpObj.name === '' || tmpObj.friendlyUrl === '' || productObject.identifier === '' || productObject.manufacturer === '') {
       this.toastr.error(this.translate.instant('COMMON.FILL_REQUIRED_FIELDS'));
       this.loading = false;
     } else {

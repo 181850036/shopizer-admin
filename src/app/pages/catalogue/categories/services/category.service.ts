@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 
 import { CrudService } from '../../../shared/services/crud.service';
-import { StorageService } from '../../../shared/services/storage.service';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -10,8 +9,7 @@ import { Observable } from 'rxjs';
 export class CategoryService {
 
   constructor(
-    private crudService: CrudService,
-    private storageService: StorageService,
+    private crudService: CrudService
   ) {
   }
 
@@ -24,14 +22,6 @@ export class CategoryService {
       lang: '_all'
     };
     return this.crudService.get(`/v1/category/${id}`, params);
-  }
-
-  getCategoryByProductId(id): Observable<any> {
-    const params = {
-      store: this.storageService.getMerchant(),
-      lang: this.storageService.getLanguage()
-    };
-    return this.crudService.get(`/v1/category/product/${id}`, params);
   }
 
   addCategory(category): Observable<any> {
@@ -62,6 +52,7 @@ export class CategoryService {
   }
 
   filterCategory(data): Observable<any> {
+    // console.log("data", data);
     return this.crudService.get(`/v1/category?count=${data.count}&page=${data.page}&name=${data.name}`);
   }
 

@@ -9,7 +9,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { InventoryService } from '../../services/inventory.service';
 import * as moment from 'moment';
 import { validators } from '../../../../shared/validation/validators';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @Component({
   selector: 'ngx-inventory-form',

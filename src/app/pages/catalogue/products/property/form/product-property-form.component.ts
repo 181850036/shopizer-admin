@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ChangeDetectorRef, EventEmitter, Output } fro
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { PropertiesService } from '../../services/product-properties';
+// import { StorageService } from '../../../../shared/services/storage.service';
 import { ConfigService } from '../../../../shared/services/config.service';
 import { ProductAttributesService } from '../../services/product-attributes.service';
 import { ToastrService } from 'ngx-toastr';
@@ -13,12 +14,11 @@ import { TranslateService } from '@ngx-translate/core';
     styleUrls: ['./product-property-form.component.scss']
 })
 export class ProductPropertyForm implements OnInit {
-
-    productId: any;
-    productType: any;
+    //product: any;
+    @Input() product;
+    @Output() loading = new EventEmitter<any>();
     attributeId: any;
     attribute: any = {};
-
     form: FormGroup;
     perPage: number = 15;
     loader: boolean = false;
@@ -36,7 +36,6 @@ export class ProductPropertyForm implements OnInit {
         private cdr: ChangeDetectorRef,
         protected ref: NbDialogRef<ProductPropertyForm>
     ) {
-        
         this.createForm();
         this.getLanguages();
     }
@@ -56,12 +55,15 @@ export class ProductPropertyForm implements OnInit {
         this.cdr.detectChanges();
     }
     ngOnInit() {
+
         this.getProductProperty();
+        
         if (this.attributeId) {
             this.loader = true;
             
-            this.productAttributesService.getAttributesById(this.productId, this.attributeId, { lang: '_all' }).subscribe(res => {
+            this.productAttributesService.getAttributesById(this.product.id, this.attributeId, { lang: '_all' }).subscribe(res => {
                 this.attribute = res;
+                console.log(res.option)
                 setTimeout(() => {
                     this.onChangePropertyOption({ value: res.option.id })
                     this.fillForm();
@@ -72,10 +74,10 @@ export class ProductPropertyForm implements OnInit {
             });
         }
     }
-
     getProductProperty() {
-        this.propertiesService.getProductProperties(this.productType, localStorage.getItem('lang'))
+        this.propertiesService.getProductProperties(this.product.type.code, localStorage.getItem('lang'))
             .subscribe(property => {
+                // console.log(property);
                 let temp = []
                 property.map((data) => {
                     temp.push({ value: data.option.id, label: data.option.name, type: data.option.type, values: data.values })
@@ -83,8 +85,6 @@ export class ProductPropertyForm implements OnInit {
                 this.options = temp;
             });
     }
-
-
     private createForm() {
         this.form = this.fb.group({
             option: ['', [Validators.required]],
@@ -94,8 +94,6 @@ export class ProductPropertyForm implements OnInit {
 
 
     }
-
-
     addFormArray() {
         const control = <FormArray>this.form.controls.descriptions;
         this.languages.forEach(lang => {
@@ -138,7 +136,7 @@ export class ProductPropertyForm implements OnInit {
     fillForm() {
         // const priceSeparator = this.attribute.productAttributePrice.indexOf('$') + 1;
         // this.currency = this.attribute.productAttributePrice.slice(0, priceSeparator);
-        //console.log(this.optionValues);
+        console.log(this.optionValues);
         let index = this.optionValues.findIndex((a) => a.value === this.attribute.optionValue.id);
         console.log(index);
         this.form.patchValue({
@@ -201,7 +199,7 @@ export class ProductPropertyForm implements OnInit {
         }
         this.loader = true;
         if (this.attribute.id) {
-            this.productAttributesService.updateAttribute(this.productId, this.attributeId, param)
+            this.productAttributesService.updateAttribute(this.product.id, this.attributeId, param)
                 .subscribe(res => {
                     this.loader = false;
                     // this.attribute = res;
@@ -211,7 +209,7 @@ export class ProductPropertyForm implements OnInit {
                     this.loader = false;
                 });;
         } else {
-            this.productAttributesService.createAttribute(this.productId, param).subscribe(res => {
+            this.productAttributesService.createAttribute(this.product.id, param).subscribe(res => {
                 this.loader = false;
                 this.goToback();
                 this.toastr.success(this.translate.instant('PROPERTY.PRODUCT_PROPERTY_CREATED'));

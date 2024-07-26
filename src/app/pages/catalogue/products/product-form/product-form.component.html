@@ -29,16 +29,16 @@
               <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <div class="form-group">
-                    <label for="sku" class="col-form-label inputLabel">{{ 'PRODUCT.UNIQUE_ID' | translate}}
+                    <label for="identifier" class="col-form-label inputLabel">{{ 'PRODUCT.UNIQUE_ID' | translate}}
                       <span class="mandatory">*</span></label>
                     <div>
-                      <input type="text" class="form-control inputText" id="sku" formControlName='sku'
-                        placeholder="{{ 'Unique sku' | translate}}" (change)="checkSku($event)" required>
-                      <span *ngIf="(sku.dirty || sku.touched) && sku.invalid" class="err-message">
-                        <span *ngIf="sku.errors.required">
+                      <input type="text" class="form-control inputText" id="identifier" formControlName='identifier'
+                        placeholder="{{ 'Unique identifier' | translate}}" (change)="checkSku($event)" required>
+                      <span *ngIf="(identifier.dirty || identifier.touched) && identifier.invalid" class="err-message">
+                        <span *ngIf="identifier.errors.required">
                           {{ 'PRODUCT.ID_REQUIRED' | translate }}
                         </span>
-                        <span *ngIf="sku.errors.pattern">
+                        <span *ngIf="identifier.errors.pattern">
                           {{ 'COMMON.ALPHA_DECIMAL_RULE' | translate}}
                         </span>
                         <span *ngIf="!isCodeUnique" class="err-message">
@@ -399,32 +399,27 @@
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div [nbSpinner]="tabLoader" nbSpinnerSize="large" nbSpinnerStatus="primary">
             <nb-card class="nb-card inline-form-card">
-                <!-- TABS -->
-               <nb-route-tabset id="tabs" [tabs]="tabs" fullWidth></nb-route-tabset>
-              
-              <!--
+              <!-- <nb-route-tabset [tabs]="tabs"></nb-route-tabset> -->
+
               <nb-tabset>
                 <nb-tab tabTitle="{{ 'COMPONENTS.PRODUCTS_IMAGES' | translate}}">
-                  <ngx-products-images *nbTabContent [images]="images" [product]="product" (refreshProduct)="refreshProduct()"
+                  <ngx-products-images [images]="images" [product]="product" (refreshProduct)="refreshProduct()"
                     (loading)="loadingTab($event)"></ngx-products-images>
                 </nb-tab>
                 <nb-tab tabTitle="{{ 'COMPONENTS.PRODUCT_TO_CATEGORY' | translate}}">
-                  <ngx-product-to-category *nbTabContent [product]="product" (loading)="loadingTab($event)"></ngx-product-to-category>
+                  <ngx-product-to-category [product]="product" (loading)="loadingTab($event)"></ngx-product-to-category>
                 </nb-tab>
                 <nb-tab tabTitle="{{ 'COMPONENTS.OPTIONS_CONFIG' | translate}}">
-                  <ngx-product-attributes *nbTabContent [productId]="product.id" (loading)="loadingTab($event)">
+                  <ngx-product-attributes [productId]="product.id" (loading)="loadingTab($event)">
                   </ngx-product-attributes>
                 </nb-tab>
                 <nb-tab tabTitle="{{ 'COMPONENTS.PRODUCTS_PROPERTIES' | translate}}">
-                  <ngx-product-property *nbTabContent [product]="product" (loading)="loadingTab($event)"></ngx-product-property>
+                  <ngx-product-property [product]="product" (loading)="loadingTab($event)"></ngx-product-property>
                 </nb-tab>
                 <nb-tab tabTitle="{{ 'COMPONENTS.PRODUCTS_DISCOUNT' | translate}}">
-                  <ngx-product-discount *nbTabContent (loading)="loadingTab($event)"> </ngx-product-discount>
+                  <ngx-product-discount (loading)="loadingTab($event)"> </ngx-product-discount>
                 </nb-tab>
               </nb-tabset>
-              -->
-              
-              
 
 
             </nb-card>

@@ -1,7 +1,6 @@
 {
   "canadapost": "Canada Post",
   "ups": "UPS",
-  "shiprocket": "ShipRocket",
   "weightBased": "Weight Based Shipping Price",
   "customQuotesRules": "Custom shipping method",
   "priceByDistance": "Shipping price by distance",
@@ -10,7 +9,6 @@
   "paypal-express-checkout": "PayPal Express Checkout",
   "beanstream": "Beanstream",
   "stripe": "Stripe",
-  "paytm": "Paytm",
   "braintree": "Braintree",
   "COMPONENTS": {
     "LOGIN": "Login",
@@ -246,8 +244,7 @@
     "CATEGORY_NAME": "Category name",
     "PARENT": "Parent",
     "HIERARCHY_UPDATED": "Hierarchy successfully updated",
-    "CATEGORY_VISIBILITY": "Category visibility updated",
-    "SELECT_CATEGORY": "Select category"
+    "CATEGORY_VISIBILITY": "Category visibility updated"
   },
   "CATEGORY_FORM": {
     "ROOT_CATEGORY": "Root category",
@@ -349,8 +346,7 @@
     "OPTION_VALUE_NAME": "Option value name",
     "OPTION_VALUE_UPDATED": "Option value updated.",
     "OPTION_VALUE_CREATED": "Option value created.",
-    "OPTION_VALUE_REMOVED": "Option value removed.",
-    "SELECT_OPTION_VALUE": "Select option value"
+    "OPTION_VALUE_REMOVED": "Option value removed."
   },
   "OPTION_SET": {
     "SELECT_OPTION_NAME": "Select option name",
@@ -564,7 +560,6 @@
     "FILE_MAX_COUNT": "You can upload max 10 images",
     "NO_ITEMS": "No items to show",
     "VALUE_REQUIRED": "Value is required",
-    "INVALID_VALUE": "Value is invalid",
     "ACTIONS": "Actions",
     "READ_ONLY": "Read only",
     "radio": "Radio",

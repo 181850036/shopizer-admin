@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ConfigService } from '../../shared/services/config.service';
+import { MapsAPILoader } from '@agm/core';
 import { environment } from '../../../../environments/environment';
 import { StoreService } from '../services/store.service';
 import { UserService } from '../../shared/services/user.service';
@@ -77,7 +78,7 @@ export class StoreFormComponent implements OnInit {
     private fb: FormBuilder,
     private configService: ConfigService,
     private storeService: StoreService,
-    //private mapsAPILoader: MapsAPILoader,
+    private mapsAPILoader: MapsAPILoader,
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef,
     private userService: UserService,
@@ -148,7 +149,6 @@ export class StoreFormComponent implements OnInit {
 
   addressAutocomplete() {
     // load Places Autocomplete
-    /**
     this.mapsAPILoader.load().then(() => {
       const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
         types: ['address']
@@ -194,7 +194,6 @@ export class StoreFormComponent implements OnInit {
         });
       });
     });
-    **/
   }
 
   private createForm() {

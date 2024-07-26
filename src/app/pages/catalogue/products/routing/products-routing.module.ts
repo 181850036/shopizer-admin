@@ -9,10 +9,6 @@ import { ProductToCategoryComponent } from '../product-to-category/product-to-ca
 import { ProductsImagesComponent } from './../products-images/products-images.component';
 import { ProductDiscountComponent } from '../product-discount/product-discount.component';
 import { ProductOrderingComponent } from '../product-ordering/product-ordering.component';
-import { ProductAttributesComponent } from '../attribute/product-attributes/product-attributes.component';
-import { ProductProperties } from '../property/list/product-property.component';
-
-
 
 const routes: Routes = [
   {
@@ -36,39 +32,32 @@ const routes: Routes = [
         path: 'product/:id',
         // canDeactivate: [ExitGuard],
         component: ProductDetailsComponent,
-
         children: [
           {
             path: '',
-            redirectTo: 'default',
-            pathMatch: 'full',
-          },
-          {
-            path: 'default', //images by default
             component: ProductsImagesComponent,
           },
           {
-            path: 'images', //images by default
+            path: 'details', //images by default
             component: ProductsImagesComponent,
           },
           {
             path: 'category',
-            component: ProductToCategoryComponent,
+            component: ProductsImagesComponent,
           },
           {
             path: 'options',
-            component: ProductAttributesComponent,
+            component: ProductsImagesComponent,
           },
           {
             path: 'properties',
-            component: ProductProperties,
+            component: ProductsImagesComponent,
           },
           {
             path: 'discount',
             component: ProductDiscountComponent,
           },
         ],
-        
       },
       {
         path: ':productId/category-association',
@@ -77,19 +66,13 @@ const routes: Routes = [
       {
         path: 'association',
         component: ProductToCategoryComponent,
-      }
+      },
     ],
   }
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes)
-    //RouterModule.forRoot(routes, {
-    //  anchorScrolling: 'enabled',
-    //  enableTracing: false
-    //}),
-  ],
+  imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
 

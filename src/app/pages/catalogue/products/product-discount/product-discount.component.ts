@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { validators } from '../../../shared/validation/validators';
-import { Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { ProductService } from '../services/product.service';
-
 
 @Component({
   selector: 'ngx-product-discount',
@@ -14,26 +9,11 @@ import { ProductService } from '../services/product.service';
 })
 export class ProductDiscountComponent implements OnInit {
   discountForm: FormGroup;
-  id : any;
-  loading: false;
 
-  constructor(
-    private dfb: FormBuilder,
-    private location: Location,   
-    private productService: ProductService,
-    private router: Router,
-    ) { }
+  constructor(private dfb: FormBuilder) { }
 
   ngOnInit(): void {
-    
-    this.id = this.productService.getProductIdRoute(this.router,this.location);
-
-    //scroll down to discount tab
-    let el = document.getElementById('tabs');
-    el.scrollIntoView();
-
-    //get product price
-
+    // this.createForm()
     this.discountForm = this.dfb.group({
       discountedPrice: [Validators.pattern(validators.number)],
       percentageOff: [Validators.pattern(validators.number)],
@@ -46,11 +26,7 @@ export class ProductDiscountComponent implements OnInit {
       rebateRadio: [null]
     })
   }
-
-  save() { 
-
-
-  }
+  save() { }
 
   discountSelected(e) {
     if (e == 1) {

@@ -1,10 +1,8 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { UrlTree, UrlSegment, UrlSegmentGroup, ActivatedRoute, Router, PRIMARY_OUTLET } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { ProductImageService } from '../services/product-image.service';
-import { ProductService } from '../services/product.service';
-import { Location } from '@angular/common';
 
 import { Image } from '../../../shared/models/image';
 import { ImageBrowserComponent } from '../../../../@theme/components/image-browser/image-browser.component';
@@ -17,26 +15,26 @@ import { ImageBrowserComponent } from '../../../../@theme/components/image-brows
 export class ProductsImagesComponent implements OnInit {
 
   // product: any;
-  images : any;
-  id : any;
-  loaded = false;
-  loading = false;
-
+  @Input() images;
+  @Input() product;
 
   @Output() refreshProduct = new EventEmitter<string>();
+  @Output() loading = new EventEmitter<any>();
 
 
   // loading = true;
   addImageUrlComponent = '';//add image url to be used by uploader
+
+  // public setImages(mageList: Image[]) {
+  //   console.log('Setting images');
+  // }
 
   constructor(
 
     private toastr: ToastrService,
     private translate: TranslateService,
     private productImageService: ProductImageService,
-    private productService: ProductService,
-    private location: Location,
-    private router: Router
+    private activatedRoute: ActivatedRoute
 
   ) {
 
@@ -44,46 +42,37 @@ export class ProductsImagesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.id = this.productService.getProductIdRoute(this.router,this.location);
-    this.load();
-    //specify add image url to image component
-    this.addImageUrlComponent = this.productImageService.addImageUrl(this.id);
-    //this only happens when /images, not when default
-    if(this.location.path().includes('images')) {
-      let el = document.getElementById('tabs');
-      el.scrollIntoView();
-    }
-  }
+    // console.log(this.product == null);
+    // console.log(this.images == null);
+    //console.log(this.images.length);
 
-  load() {
-    this.loading = true;
-    this.productImageService.getImages(this.id)
-    .subscribe(res => {
-      this.images = res;
-      this.loading = false;
-      this.loaded = true;
-    });
+    //todo load images
+    //console.log(JSON.stringify(this.product));
+
+    //specify add image url to image component
+    this.addImageUrlComponent = this.productImageService.addImageUrl(this.product.id);
+    // console.log(addImageUrlComponent)
+
   }
 
   /** image component */
   removeImage(event) {
-    this.loading = true;
-    this.productImageService.removeImage(this.id, event)
+    this.loading.emit(true);
+    this.productImageService.removeImage(this.product.id, event)
       .subscribe(res1 => {
-        this.load();
+        //this.refreshProduct();
+        this.refreshProduct.emit();
+        this.loading.emit(false);
         this.toastr.success(this.translate.instant('PRODUCT.PRODUCT_UPDATED'));
       }, error => {
         this.toastr.error(error.error.message);
-        this.loading = false;
+        this.loading.emit(false);
       });
   }
   updateImage(event) {
-    this.loading = true;
-    this.productImageService.updateImage(this.id, event).subscribe(res => {
-      this.load();
+    this.productImageService.updateImage(this.product.id, event).subscribe(res => {
     }, error => {
       this.toastr.error(error.error.message);
-      this.loading = false;
     });
 
   }
@@ -93,14 +82,16 @@ export class ProductsImagesComponent implements OnInit {
   }
 
   addedImage(event) {
-    this.load();
+    //this.refreshProduct();
+    this.refreshProduct.emit();
+    this.loading.emit(false);
     this.toastr.success(this.translate.instant('PRODUCT.PRODUCT_UPDATED'));
 
   }
   fileAdded(e) {
-    this.load();
+    console.log('eeeeeeee', e)
+    this.loading.emit(e);
   }
-
 
   /** end image component */
 
